@@ -1,0 +1,253 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+        Sematec LMS
+        {% endblock %}
+    </title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="{% static 'lms/css/style.css' %}">
+
+    <style>
+        html,
+        body {
+            min-height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            background-color: #f8fafc;
+        }
+
+        .site-main {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .site-main > .staff-layout {
+            flex: 1;
+            min-height: 0;
+        }
+
+        .site-footer {
+            background-color: #172554;
+            color: #cbd5e1;
+            padding: 30px 20px 18px;
+            margin-top: 0;
+            border-top: 4px solid #3b82f6;
+        }
+
+        .site-footer h5 {
+            color: white;
+            font-size: 21px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .site-footer p {
+            color: #cbd5e1;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .site-footer .footer-divider {
+            border-color: rgba(255, 255, 255, 0.15);
+            margin: 20px 0 15px;
+        }
+
+        .site-footer .footer-copyright {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 0;
+        }
+
+        .staff-sidebar {
+            border-right: 3px solid #3b82f6;
+        }
+
+        @media (max-width: 768px) {
+            .site-footer {
+                text-align: center;
+                padding: 25px 15px 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-white shadow-sm">
+
+        <div class="container">
+
+            <a class="navbar-brand fw-bold text-primary"
+               href="{% url 'home' %}">
+                Sematec
+            </a>
+
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarMenu">
+
+                <span class="navbar-toggler-icon"></span>
+
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarMenu">
+
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">
+                            Home
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'course_list' %}">
+                            Courses
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'instructor_list' %}">
+                            Instructors
+                        </a>
+                    </li>
+
+                </ul>
+
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+
+                    {% if user.is_authenticated %}
+
+                        <span class="text-secondary small">
+                            Hi, {{ user.username }} 👋
+                        </span>
+
+                        {% if is_sematec_staff %}
+
+                            <a href="{% url 'staff_dashboard' %}"
+                               class="btn btn-outline-primary">
+                                Staff Dashboard
+                            </a>
+
+                        {% else %}
+
+                            <a href="{% url 'my_courses' %}"
+                               class="btn btn-outline-primary">
+                                My Courses
+                            </a>
+
+                            <a href="{% url 'dashboard' %}"
+                               class="btn btn-outline-primary">
+                                Dashboard
+                            </a>
+
+                        {% endif %}
+
+                        <a href="{% url 'logout' %}"
+                           class="btn btn-primary">
+                            Logout
+                        </a>
+
+                    {% else %}
+
+                        <a href="{% url 'login' %}"
+                           class="btn btn-outline-primary">
+                            Sign In
+                        </a>
+
+                        <a href="{% url 'signup' %}"
+                           class="btn btn-primary">
+                            Sign Up
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <!-- Main Content -->
+    <main class="site-main">
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+
+        <div class="container">
+
+            <div class="row align-items-center">
+
+                <div class="col-md-6">
+
+                    <h5>Sematec</h5>
+
+                    <p>
+                        Sematec Learning Management System
+                    </p>
+
+                    <p>
+                        A platform for learning and professional development.
+                    </p>
+
+                </div>
+
+                <div class="col-md-6 text-md-end">
+
+                    <p>
+                        Learn. Develop. Grow.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <hr class="footer-divider">
+
+            <p class="footer-copyright">
+                © 2026 Sematec. All Rights Reserved.
+            </p>
+
+        </div>
+
+    </footer>
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+</body>
+
+</html>

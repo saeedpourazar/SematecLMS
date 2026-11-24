@@ -1,0 +1,187 @@
+
+{% extends 'lms/staff_base.html' %}
+
+{% block title %}
+Student Management - Sematec LMS
+{% endblock %}
+
+{% block staff_content %}
+
+<style>
+    .student-filter {
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 22px;
+    }
+
+    .student-filter label {
+        font-weight: 600;
+        margin-bottom: 7px;
+        color: #374151;
+    }
+
+    .student-filter .form-control {
+        min-height: 42px;
+    }
+
+    .student-count {
+        color: #64748b;
+        font-size: 14px;
+    }
+
+    .pagination .page-link {
+        color: #2563eb;
+    }
+
+    .pagination .active .page-link {
+        background-color: #2563eb;
+        border-color: #2563eb;
+        color: white;
+    }
+</style>
+
+<div class="staff-dashboard">
+
+    <div class="dashboard-header">
+        <h1>Student Management</h1>
+        <p>View and review all registered students.</p>
+    </div>
+
+    <div class="dashboard-card">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <h3 class="mb-0">All Students</h3>
+
+            <span class="student-count">
+                {{ page_obj.paginator.count }} students found
+            </span>
+        </div>
+
+        <form method="GET" class="student-filter">
+
+            <div class="row g-3">
+
+                <div class="col-md-9">
+                    <label for="search">Search Students</label>
+
+                    <input
+                        type="text"
+                        name="q"
+                        id="search"
+                        class="form-control"
+                        placeholder="Search by username, first name, last name or email..."
+                        value="{{ search_query }}"
+                    >
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        Search
+                    </button>
+
+                    <a href="{% url 'student_management' %}" class="btn btn-outline-secondary">
+                        Clear
+                    </a>
+                </div>
+
+            </div>
+
+        </form>
+
+        {% if students %}
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Enrolled Courses</th>
+                            <th>Date Joined</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for student in students %}
+
+                            <tr>
+                                <td>{{ student.username }}</td>
+                                <td>{{ student.first_name|default:"-" }}</td>
+                                <td>{{ student.last_name|default:"-" }}</td>
+                                <td>{{ student.email|default:"-" }}</td>
+                                <td>
+                                    <span class="badge" style="background-color: #1e293b; color: #ffffff;">
+                                        {{ student.enrollment_count }}
+                                    </span>
+                                </td>
+                                <td>{{ student.date_joined|date:"Y-m-d" }}</td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% if page_obj.has_other_pages %}
+
+                <nav aria-label="Student pages">
+                    <ul class="pagination justify-content-center mt-4">
+
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?q={{ search_query|urlencode }}&page={{ page_obj.previous_page_number }}">
+                                    Previous
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for number in page_obj.paginator.page_range %}
+                            <li class="page-item {% if page_obj.number == number %}active{% endif %}">
+                                <a class="page-link"
+                                   href="?q={{ search_query|urlencode }}&page={{ number }}">
+                                    {{ number }}
+                                </a>
+                            </li>
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?q={{ search_query|urlencode }}&page={{ page_obj.next_page_number }}">
+                                    Next
+                                </a>
+                            </li>
+                        {% endif %}
+
+                    </ul>
+                </nav>
+
+            {% endif %}
+
+        {% else %}
+
+            <div class="text-center py-5">
+                <h5 class="text-muted">No students found.</h5>
+                <p class="text-muted mb-0">
+                    Try another search term.
+                </p>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

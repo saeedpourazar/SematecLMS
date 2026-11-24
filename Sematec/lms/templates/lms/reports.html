@@ -1,0 +1,236 @@
+
+{% extends 'lms/staff_base.html' %}
+
+{% block title %}
+Reports - Sematec LMS
+{% endblock %}
+
+{% block staff_content %}
+
+<style>
+    .reports-page {
+        padding: 5px;
+    }
+
+    .reports-header {
+        margin-bottom: 30px;
+    }
+
+    .reports-header h1 {
+        font-size: 27px;
+        font-weight: 700;
+        color: #172554;
+        margin-bottom: 8px;
+    }
+
+    .reports-header p {
+        color: #64748b;
+        margin: 0;
+    }
+
+    .report-stat {
+        background: #fff;
+        border: 1px solid #e8edf5;
+        border-radius: 14px;
+        padding: 24px;
+        height: 100%;
+        box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+    }
+
+    .report-stat h3 {
+        font-size: 15px;
+        color: #64748b;
+        margin-bottom: 14px;
+    }
+
+    .report-stat h2 {
+        font-size: 30px;
+        font-weight: 700;
+        color: #172554;
+        margin-bottom: 8px;
+    }
+
+    .report-stat p {
+        font-size: 13px;
+        color: #94a3b8;
+        margin: 0;
+    }
+
+    .export-section {
+        background: #fff;
+        border: 1px solid #e8edf5;
+        border-radius: 16px;
+        padding: 25px;
+        margin-top: 30px;
+        box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+    }
+
+    .export-section h2 {
+        font-size: 20px;
+        font-weight: 700;
+        color: #172554;
+        margin-bottom: 8px;
+    }
+
+    .export-description {
+        color: #64748b;
+        font-size: 14px;
+        margin-bottom: 24px;
+    }
+
+    .export-card {
+        border: 1px solid #e8edf5;
+        border-radius: 12px;
+        padding: 20px;
+        height: 100%;
+        transition: 0.2s;
+    }
+
+    .export-card:hover {
+        border-color: #3b82f6;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 18px rgba(59, 130, 246, 0.08);
+    }
+
+    .export-icon {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 21px;
+        margin-bottom: 16px;
+    }
+
+    .export-card h4 {
+        font-size: 16px;
+        font-weight: 700;
+        color: #172554;
+        margin-bottom: 8px;
+    }
+
+    .export-card p {
+        font-size: 13px;
+        color: #64748b;
+        min-height: 40px;
+    }
+
+    .export-card .btn {
+        width: 100%;
+        margin-top: 10px;
+        font-size: 13px;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    @media (max-width: 576px) {
+        .export-section {
+            padding: 18px;
+        }
+    }
+</style>
+
+<div class="reports-page">
+
+    <div class="reports-header">
+        <h1>Reports & Statistics</h1>
+        <p>Overview of the Sematec LMS platform.</p>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-md-6 col-xl-3">
+            <div class="report-stat">
+                <h3>Courses</h3>
+                <h2>{{ total_courses }}</h2>
+                <p>Total registered courses</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="report-stat">
+                <h3>Students</h3>
+                <h2>{{ total_students }}</h2>
+                <p>Total registered students</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="report-stat">
+                <h3>Instructors</h3>
+                <h2>{{ total_instructors }}</h2>
+                <p>Total registered instructors</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="report-stat">
+                <h3>Enrollments</h3>
+                <h2>{{ total_enrollments }}</h2>
+                <p>Total course enrollments</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="export-section">
+
+        <h2>Export Reports</h2>
+        <p class="export-description">
+            Download platform information as CSV files compatible with Excel.
+        </p>
+
+        <div class="row g-4">
+
+            <div class="col-md-6 col-xl-4">
+                <div class="export-card">
+                    <div class="export-icon">👨‍🏫</div>
+                    <h4>Instructors Report</h4>
+                    <p>
+                        Export all instructors and their assigned course counts.
+                    </p>
+                    <a href="{% url 'export_instructors' %}"
+                       class="btn btn-outline-primary">
+                        Download Instructors
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-4">
+                <div class="export-card">
+                    <div class="export-icon">📚</div>
+                    <h4>Courses Report</h4>
+                    <p>
+                        Export all courses, instructors, categories and prices.
+                    </p>
+                    <a href="{% url 'export_courses' %}"
+                       class="btn btn-outline-primary">
+                        Download Courses
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-4">
+                <div class="export-card">
+                    <div class="export-icon">🎓</div>
+                    <h4>Students Report</h4>
+                    <p>
+                        Export student information and enrollment counts.
+                    </p>
+                    <a href="{% url 'export_students' %}"
+                       class="btn btn-outline-primary">
+                        Download Students
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

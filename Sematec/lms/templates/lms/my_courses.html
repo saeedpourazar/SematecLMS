@@ -1,0 +1,148 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}
+    My Courses - Sematec LMS
+{% endblock %}
+
+{% block content %}
+
+<section class="section py-5">
+
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="mb-5">
+
+            <h2 class="fw-bold">
+                My Courses
+            </h2>
+
+            <p class="text-secondary">
+                Courses you have enrolled in.
+            </p>
+
+        </div>
+
+
+        <!-- Courses -->
+        <div class="row g-4">
+
+            {% for enrollment in enrollments %}
+
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card course-card h-100
+                                border-0 shadow-sm">
+
+                        <!-- Course Image -->
+                        <div class="course-image">
+
+                            {% if enrollment.course.image %}
+
+                                <img
+                                    src="{{ enrollment.course.image.url }}"
+                                    alt="{{ enrollment.course.title }}"
+                                >
+
+                            {% else %}
+
+                                🎓
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- Course Body -->
+                        <div class="card-body p-4 d-flex flex-column">
+
+                            <!-- Course Title -->
+                            <h5 class="fw-bold">
+
+                                {{ enrollment.course.title }}
+
+                            </h5>
+
+
+                            <!-- Description -->
+                            <p class="text-secondary mb-4">
+
+                                {{ enrollment.course.description|truncatewords:15 }}
+
+                            </p>
+
+
+                            <!-- Course Information -->
+                            <div class="course-meta mt-auto">
+
+                                <div class="course-instructor mb-3">
+
+                                    <small class="text-secondary d-block">
+                                        Instructor
+                                    </small>
+
+                                    <span class="fw-semibold">
+
+                                        {{ enrollment.course.instructor.name }}
+                                        {{ enrollment.course.instructor.family }}
+
+                                    </span>
+
+                                </div>
+
+
+                                <!-- Continue Learning -->
+                                <a
+                                    href="{% url 'course_detail' enrollment.course.pk %}?from=my_courses"
+                                    class="btn btn-primary w-100">
+                                    Continue Learning →
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <!-- Empty State -->
+                <div class="col-12">
+
+                    <div class="text-center py-5">
+
+                        <div style="font-size: 60px;">
+                            🎓
+                        </div>
+
+                        <h4 class="fw-bold mt-3">
+                            You haven't enrolled in any courses yet.
+                        </h4>
+
+                        <p class="text-secondary">
+                            Explore our courses and start learning today.
+                        </p>
+
+                        <a
+                            href="{% url 'course_list' %}"
+                            class="btn btn-primary mt-2">
+
+                            Explore Courses
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

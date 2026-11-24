@@ -1,0 +1,568 @@
+
+{% extends 'lms/staff_base.html' %}
+
+{% block title %}
+Sematec Management Dashboard
+{% endblock %}
+
+{% block staff_content %}
+
+<style>
+    .management-dashboard {
+        color: #1e293b;
+    }
+
+    .management-dashboard .page-heading {
+        margin-bottom: 28px;
+    }
+
+    .management-dashboard .page-heading h1 {
+        font-size: 29px;
+        font-weight: 800;
+        margin-bottom: 7px;
+    }
+
+    .management-dashboard .page-heading p {
+        color: #64748b;
+        margin: 0;
+    }
+
+    /* Statistics */
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 28px;
+    }
+
+    .stat-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 15px;
+        padding: 22px;
+        box-shadow: 0 4px 15px rgba(15, 23, 42, .035);
+        transition: .25s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 9px 22px rgba(15, 23, 42, .08);
+    }
+
+    .stat-icon {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 21px;
+        margin-bottom: 16px;
+    }
+
+    .stat-number {
+        font-size: 29px;
+        font-weight: 800;
+        margin: 0 0 4px;
+    }
+
+    .stat-label {
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    .icon-blue {
+        background: #dbeafe;
+        color: #2563eb;
+    }
+
+    .icon-green {
+        background: #d1fae5;
+        color: #059669;
+    }
+
+    .icon-purple {
+        background: #ede9fe;
+        color: #7c3aed;
+    }
+
+    .icon-orange {
+        background: #ffedd5;
+        color: #ea580c;
+    }
+
+    /* Chart */
+
+    .dashboard-panel {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(15, 23, 42, .035);
+    }
+
+    .panel-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 22px;
+    }
+
+    .panel-heading h3 {
+        font-size: 18px;
+        font-weight: 750;
+        margin: 0;
+    }
+
+    .panel-heading a {
+        color: #2563eb;
+        font-size: 13px;
+        font-weight: 650;
+        text-decoration: none;
+    }
+
+    .chart-area {
+        height: 190px;
+        display: flex;
+        align-items: flex-end;
+        gap: 15px;
+        padding: 10px 5px 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .chart-column {
+        flex: 1;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .chart-bar {
+        width: 100%;
+        max-width: 58px;
+        min-height: 5px;
+        background: linear-gradient(180deg, #60a5fa, #2563eb);
+        border-radius: 8px 8px 2px 2px;
+        transition: .25s;
+    }
+
+    .chart-bar:hover {
+        background: #1d4ed8;
+    }
+
+    .chart-value {
+        font-size: 12px;
+        font-weight: 700;
+        color: #475569;
+    }
+
+    .chart-month {
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    /* Horizontal Sections */
+
+    .content-section {
+        margin-bottom: 30px;
+    }
+
+    .content-section .panel-heading {
+        margin-bottom: 16px;
+    }
+
+    .horizontal-cards {
+        display: flex;
+        gap: 17px;
+        overflow-x: auto;
+        padding: 4px 2px 15px;
+        scroll-behavior: smooth;
+    }
+
+    .horizontal-cards::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .horizontal-cards::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+
+    /* Course Cards */
+
+    .course-item {
+        flex: 0 0 225px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        overflow: hidden;
+        transition: .25s;
+    }
+
+    .course-item:hover,
+    .person-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, .09);
+    }
+
+    .course-item img {
+        width: 100%;
+        height: 125px;
+        object-fit: cover;
+        background: #e2e8f0;
+    }
+
+    .course-image-placeholder {
+        width: 100%;
+        height: 125px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+        color: #2563eb;
+        font-size: 40px;
+    }
+
+    .course-info {
+        padding: 14px;
+    }
+
+    .course-info h4 {
+        font-size: 15px;
+        font-weight: 750;
+        margin-bottom: 9px;
+        min-height: 36px;
+    }
+
+    .course-info p {
+        color: #64748b;
+        font-size: 12px;
+        margin: 0 0 5px;
+    }
+
+    /* People Cards */
+
+    .person-item {
+        flex: 0 0 170px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 15px;
+        padding: 20px 14px;
+        text-align: center;
+        transition: .25s;
+    }
+
+    .person-image {
+        width: 82px;
+        height: 82px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #e2e8f0;
+        margin: 0 auto 13px;
+        display: block;
+        background: #f1f5f9;
+    }
+
+    .student-avatar {
+        width: 82px;
+        height: 82px;
+        border-radius: 50%;
+        margin: 0 auto 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        color: white;
+        font-size: 27px;
+        font-weight: 800;
+    }
+
+    .person-item h4 {
+        font-size: 14px;
+        font-weight: 750;
+        margin-bottom: 6px;
+        overflow-wrap: anywhere;
+    }
+
+    .person-item p {
+        color: #64748b;
+        font-size: 12px;
+        margin: 0;
+    }
+
+    .empty-message {
+        width: 100%;
+        background: white;
+        border: 1px dashed #cbd5e1;
+        color: #64748b;
+        border-radius: 12px;
+        padding: 25px;
+        text-align: center;
+    }
+
+    @media (max-width: 1100px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 600px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .stat-card {
+            padding: 15px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+        }
+
+        .management-dashboard .page-heading h1 {
+            font-size: 24px;
+        }
+
+        .dashboard-panel {
+            padding: 16px;
+        }
+    }
+</style>
+
+
+<div class="management-dashboard">
+
+    <!-- Header -->
+
+    <div class="page-heading">
+        <h1>Management Dashboard</h1>
+        <p>Overview of Sematec learning platform and activities.</p>
+    </div>
+
+
+    <!-- Statistics -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <div class="stat-icon icon-blue">📚</div>
+            <div class="stat-number">{{ total_courses }}</div>
+            <div class="stat-label">Total Courses</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon icon-green">🎓</div>
+            <div class="stat-number">{{ total_instructors }}</div>
+            <div class="stat-label">Total Instructors</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon icon-purple">👥</div>
+            <div class="stat-number">{{ total_students }}</div>
+            <div class="stat-label">Registered Students</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon icon-orange">📋</div>
+            <div class="stat-number">{{ total_enrollments }}</div>
+            <div class="stat-label">Total Enrollments</div>
+        </div>
+
+    </div>
+
+
+    <!-- Enrollment Chart -->
+
+    <div class="dashboard-panel">
+
+        <div class="panel-heading">
+            <h3>Enrollment Statistics</h3>
+            <span class="text-secondary small">Last 6 Months</span>
+        </div>
+
+        <div class="chart-area">
+
+            {% for item in monthly_data %}
+
+                <div class="chart-column">
+
+                    <span class="chart-value">
+                        {{ item.count }}
+                    </span>
+
+                    <div
+                        class="chart-bar"
+                        style="height: {{ item.height }}%;">
+                    </div>
+
+                    <span class="chart-month">
+                        {{ item.month }}
+                    </span>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Recent Courses -->
+
+    <section class="content-section">
+
+        <div class="panel-heading">
+            <h3>Recently Added Courses</h3>
+            <a href="{% url 'course_management' %}">
+                View All →
+            </a>
+        </div>
+
+        <div class="horizontal-cards">
+
+            {% for course in recent_courses %}
+
+                <div class="course-item">
+
+                    {% if course.image %}
+                        <img
+                            src="{{ course.image.url }}"
+                            alt="{{ course.title }}">
+                    {% else %}
+                        <div class="course-image-placeholder">
+                            📚
+                        </div>
+                    {% endif %}
+
+                    <div class="course-info">
+
+                        <h4>{{ course.title }}</h4>
+
+                        <p>
+                            Instructor:
+                            {{ course.instructor.name }}
+                            {{ course.instructor.family }}
+                        </p>
+
+                        <p>
+                            Duration: {{ course.duration }} Hours
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <div class="empty-message">
+                    No courses have been added yet.
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+
+    <!-- Instructors -->
+
+    <section class="content-section">
+
+        <div class="panel-heading">
+            <h3>Our Instructors</h3>
+            <a href="{% url 'instructor_management' %}">
+                View All →
+            </a>
+        </div>
+
+        <div class="horizontal-cards">
+
+            {% for instructor in recent_instructors %}
+
+                <div class="person-item">
+
+                    {% if instructor.image %}
+                        <img
+                            src="{{ instructor.image.url }}"
+                            alt="{{ instructor.name }}"
+                            class="person-image">
+                    {% else %}
+                        <div class="student-avatar">
+                            {{ instructor.name|first|upper }}
+                        </div>
+                    {% endif %}
+
+                    <h4>
+                        {{ instructor.name }}
+                        {{ instructor.family }}
+                    </h4>
+
+                    <p>Instructor</p>
+
+                </div>
+
+            {% empty %}
+
+                <div class="empty-message">
+                    No instructors have been added yet.
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+
+    <!-- Students -->
+
+    <section class="content-section">
+
+        <div class="panel-heading">
+            <h3>Registered Students</h3>
+            <a href="{% url 'student_management' %}">
+                View All →
+            </a>
+        </div>
+
+        <div class="horizontal-cards">
+
+            {% for student in recent_students %}
+
+                <div class="person-item">
+
+                    <div class="student-avatar">
+                        {{ student.username|first|upper }}
+                    </div>
+
+                    <h4>{{ student.username }}</h4>
+
+                    <p>{{ student.email|default:"Student" }}</p>
+
+                </div>
+
+            {% empty %}
+
+                <div class="empty-message">
+                    No students have registered yet.
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}

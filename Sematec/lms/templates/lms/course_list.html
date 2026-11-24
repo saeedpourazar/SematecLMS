@@ -1,0 +1,541 @@
+{% extends 'lms/base.html' %}
+{% load humanize %}
+
+{% block title %}
+Courses - Sematec LMS
+{% endblock %}
+
+{% block content %}
+
+<section class="section py-5">
+
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="text-center mb-5">
+
+            <h2 class="fw-bold">
+                All Courses
+            </h2>
+
+            <p class="text-secondary">
+                Explore our courses and start learning today.
+            </p>
+
+        </div>
+
+
+        <!-- Search and Sort -->
+        <div class="row justify-content-center mb-5">
+
+            <div class="col-md-8 col-lg-8">
+
+                <form method="GET">
+
+                    <div class="row g-2">
+
+                        <!-- Search -->
+                        <div class="col-md-7">
+
+                            <div class="input-group">
+
+                                <input
+                                    type="text"
+                                    name="q"
+                                    class="form-control"
+                                    placeholder="Search courses..."
+                                    value="{{ search|default:'' }}"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary">
+                                    Search
+                                </button>
+
+                                {% if search %}
+
+                                <a
+                                    href="{% url 'course_list' %}?sort={{ sort|default:'' }}"
+                                    class="btn btn-outline-secondary">
+                                    Clear Search
+                                </a>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Sort -->
+                        <div class="col-md-5">
+
+                            <select
+                                name="sort"
+                                class="form-select"
+                                onchange="this.form.submit()">
+
+                                <option value="">
+                                    Sort by
+                                </option>
+
+                                <option
+                                    value="price_low"
+                                    {% if sort == 'price_low' %}selected{% endif %}>
+                                    Price: Low to High
+                                </option>
+
+                                <option
+                                    value="price_high"
+                                    {% if sort == 'price_high' %}selected{% endif %}>
+                                    Price: High to Low
+                                </option>
+
+                                <option
+                                    value="duration_low"
+                                    {% if sort == 'duration_low' %}selected{% endif %}>
+                                    Duration: Short to Long
+                                </option>
+
+                                <option
+                                    value="duration_high"
+                                    {% if sort == 'duration_high' %}selected{% endif %}>
+                                    Duration: Long to Short
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Category Filter -->
+                    <div class="row g-2 mt-2">
+
+                        <div class="col-md-7">
+
+                            <select
+                                name="category"
+                                class="form-select"
+                                onchange="this.form.submit()">
+
+                                <option value="">
+                                    All Categories
+                                </option>
+
+                                {% for category in categories %}
+
+                                    <option
+                                        value="{{ category.id }}"
+                                        {% if category_id == category.id|stringformat:"s" %}
+                                            selected
+                                        {% endif %}>
+                                        {{ category.name }}
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <!-- Course Count -->
+        <div class="d-flex justify-content-between
+                    align-items-center mb-4">
+
+            {% if search %}
+
+            <p class="text-secondary mb-0">
+
+                {{ course_count }}
+
+                {% if course_count == 1 %}
+                    course
+                {% else %}
+                    courses
+                {% endif %}
+
+                found for
+                "<strong>{{ search }}</strong>"
+
+            </p>
+
+            {% else %}
+
+            <p class="text-secondary mb-0">
+
+                {{ course_count }}
+
+                {% if course_count == 1 %}
+                    course
+                {% else %}
+                    courses
+                {% endif %}
+
+                available
+
+            </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- Courses -->
+        <div class="row g-4 align-items-stretch">
+
+            {% for course in courses %}
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card course-card h-100
+                            border-0 shadow-sm">
+
+                    <!-- Course Image -->
+                    <div class="course-image">
+
+                        {% if course.image %}
+
+                            <img
+                                src="{{ course.image.url }}"
+                                alt="{{ course.title }}"
+                            >
+
+                        {% else %}
+
+                            🎓
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- Course Body -->
+                    <div class="card-body p-4 d-flex flex-column">
+
+                        <!-- Title -->
+                        <h5 class="card-title fw-bold">
+
+                            {{ course.title }}
+
+                        </h5>
+
+
+                        <!-- Categories -->
+                        {% if course.categories.all %}
+
+                        <div class="mb-2">
+
+                            {% for category in course.categories.all %}
+
+                                <span class="badge bg-primary me-1 mb-1">
+                                    {{ category.name }}
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+                        {% endif %}
+
+
+                        <!-- Description -->
+                        <p class="card-text text-secondary">
+
+                            {{ course.description|truncatewords:15 }}
+
+                        </p>
+
+
+                        <!-- Course Information -->
+                        <div class="mb-3">
+
+                            <div class="small text-secondary mb-1">
+
+                                Instructor:
+
+                                <span class="fw-semibold text-dark">
+
+                                    {{ course.instructor.name }}
+                                    {{ course.instructor.family }}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="small text-secondary">
+
+                                Duration:
+
+                                <span class="fw-semibold text-dark">
+
+                                    {{ course.duration }} Hours
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Price and Button -->
+                        <div class="mt-auto">
+
+                            {% if course.id in enrolled_course_ids %}
+
+                                <!-- Enrolled Course -->
+
+                                <div class="d-flex
+                                            align-items-end
+                                            justify-content-between
+                                            gap-3">
+
+                                    <!-- Price -->
+
+                                        <div class="course-price">
+
+                                            <span class="text-primary fw-bold text-nowrap">
+                                                {{ course.price|intcomma }} تومان
+                                            </span>
+
+                                        </div>
+
+
+                                    <!-- Enrolled + Continue -->
+
+                                    <div class="text-end">
+
+                                        <div class="mb-2">
+
+                                            <span
+                                                class="badge
+                                                       bg-success-subtle
+                                                       text-success
+                                                       border
+                                                       border-success-subtle
+                                                       rounded-pill
+                                                       px-3
+                                                       py-2">
+
+                                                ✓ Enrolled
+
+                                            </span>
+
+                                        </div>
+
+
+                                        <a
+                                            href="{% url 'course_detail' course.pk %}?from=courses"
+                                            class="btn btn-primary px-4">
+
+                                            Continue Learning →
+
+                                        </a>
+
+                                    </div>
+
+                                </div>
+
+
+                            {% else %}
+
+                                <!-- Not Enrolled Course -->
+
+                                <div class="d-flex
+                                            justify-content-between
+                                            align-items-center
+                                            gap-3">
+
+                                    <span
+                                        class="text-primary
+                                               fw-bold
+                                               text-nowrap">
+
+                                        {{ course.price|intcomma }} تومان
+
+                                    </span>
+
+
+                                    <a
+                                        href="{% url 'course_detail' course.pk %}?from=courses"
+                                        class="btn btn-outline-primary">
+
+                                        View Course →
+
+                                    </a>
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            {% empty %}
+
+            <!-- No Courses -->
+            <div class="col-12">
+
+                <div class="text-center py-5">
+
+                    <div style="font-size: 60px;">
+                        🔍
+                    </div>
+
+
+                    {% if search %}
+
+                    <h4 class="fw-bold mt-3">
+
+                        No courses found
+
+                    </h4>
+
+
+                    <p class="text-secondary">
+
+                        No courses match
+                        "{{ search }}".
+
+                    </p>
+
+
+                    <a
+                        href="{% url 'course_list' %}"
+                        class="btn btn-outline-primary mt-2">
+
+                        View All Courses
+
+                    </a>
+
+
+                    {% else %}
+
+                    <h4 class="fw-bold mt-3">
+
+                        No courses available
+
+                    </h4>
+
+
+                    <p class="text-secondary">
+
+                        There are no courses available
+                        at the moment.
+
+                    </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- Pagination -->
+
+{% if page_obj.has_other_pages %}
+
+<nav aria-label="Course pagination">
+
+    <ul class="pagination justify-content-center mt-5">
+
+        {% if page_obj.has_previous %}
+
+            <li class="page-item">
+
+                <a
+                    class="page-link"
+                    href="?page={{ page_obj.previous_page_number }}{% if search %}&q={{ search }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}">
+
+                    ← Previous
+
+                </a>
+
+            </li>
+
+        {% endif %}
+
+
+        {% for num in page_obj.paginator.page_range %}
+
+            {% if page_obj.number == num %}
+
+                <li class="page-item active">
+
+                    <span class="page-link">
+
+                        {{ num }}
+
+                    </span>
+
+                </li>
+
+            {% else %}
+
+                <li class="page-item">
+
+                    <a
+                        class="page-link"
+                        href="?page={{ num }}{% if search %}&q={{ search }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}">
+
+                        {{ num }}
+
+                    </a>
+
+                </li>
+
+            {% endif %}
+
+        {% endfor %}
+
+
+        {% if page_obj.has_next %}
+
+            <li class="page-item">
+
+                <a
+                    class="page-link"
+                    href="?page={{ page_obj.next_page_number }}{% if search %}&q={{ search }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}">
+
+                    Next →
+
+                </a>
+
+            </li>
+
+        {% endif %}
+
+    </ul>
+
+</nav>
+
+{% endif %}
+
+{% endblock %}

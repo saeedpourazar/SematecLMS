@@ -1,0 +1,85 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}
+    Instructors - Sematec LMS
+{% endblock %}
+
+{% block content %}
+
+<section class="section py-5">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <h2 class="fw-bold">
+                Our Instructors
+            </h2>
+
+            <p class="text-secondary">
+                Meet our experienced instructors.
+            </p>
+
+        </div>
+
+        <div class="row g-4">
+
+            {% for instructor in instructors %}
+
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card h-100 border-0 shadow-sm">
+
+                        <div class="course-image">
+
+                            {% if instructor.image %}
+
+                                <img
+                                    src="{{ instructor.image.url }}"
+                                    alt="{{ instructor.name }}"
+                                >
+
+                            {% else %}
+
+                                👨‍🏫
+
+                            {% endif %}
+
+                        </div>
+
+                        <div class="card-body p-4">
+
+                            <h5 class="fw-bold">
+                                {{ instructor.name }}
+                                {{ instructor.family }}
+                            </h5>
+
+                            <p class="text-secondary">
+                                {{ instructor.bio|truncatewords:25 }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <div class="col-12 text-center">
+
+                    <p class="text-secondary">
+                        No instructors available.
+                    </p>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

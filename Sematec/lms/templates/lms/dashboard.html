@@ -1,0 +1,291 @@
+{% extends 'lms/base.html' %}
+
+{% block title %}
+Dashboard - Sematec LMS
+{% endblock %}
+
+{% block content %}
+
+<section class="py-5">
+
+    <div class="container">
+
+        <!-- Welcome -->
+
+        <div class="mb-5">
+
+            <h1 class="fw-bold">
+                Welcome back, {{ user.username }} 👋
+            </h1>
+
+            <p class="text-secondary">
+                Here is an overview of your learning activity.
+            </p>
+
+        </div>
+        <!-- Profile Summary -->
+
+        <div class="card border-0 shadow-sm mb-5">
+
+            <div class="card-body p-4">
+
+                <div class="row align-items-center">
+
+                    <div class="col-md-8">
+
+                        <h5 class="fw-bold mb-2">
+                            {{ user.username }}
+                        </h5>
+
+                        <p class="text-secondary mb-1">
+                            Email: {{ user.email }}
+                        </p>
+
+                        <p class="text-secondary mb-0">
+                            Welcome to your learning dashboard.
+                        </p>
+
+                    </div>
+
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+
+                        <a
+                                href="{% url 'my_courses' %}"
+                                class="btn btn-outline-primary">
+
+                            View My Courses
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Statistics -->
+
+        <!-- Statistics -->
+
+        <div class="row g-4 mb-5">
+
+            <!-- Courses -->
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card border-0 shadow-sm h-100">
+
+                    <div class="card-body p-4">
+
+                        <p class="text-secondary mb-2">
+                            Courses Enrolled
+                        </p>
+
+                        <h2 class="fw-bold text-primary">
+                            {{ enrollments|length }}
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Instructors -->
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card border-0 shadow-sm h-100">
+
+                    <div class="card-body p-4">
+
+                        <p class="text-secondary mb-2">
+                            Instructors
+                        </p>
+
+                        <h2 class="fw-bold text-primary">
+                            {{ instructor_count }}
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Last Enrollment -->
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card border-0 shadow-sm h-100">
+
+                    <div class="card-body p-4">
+
+                        <p class="text-secondary mb-2">
+                            Last Enrollment
+                        </p>
+
+                        {% if last_enrollment %}
+
+                        <h4 class="fw-bold text-primary">
+                            {{ last_enrollment.date_enrolled|date:"M d, Y" }}
+                        </h4>
+
+                        <p class="text-secondary mb-0">
+                            {{ last_enrollment.course.title }}
+                        </p>
+
+                        {% else %}
+
+                        <h4 class="fw-bold text-secondary">
+                            No enrollment
+                        </h4>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- My Courses -->
+
+        <div class="mb-4">
+
+            <h3 class="fw-bold">
+                My Courses
+            </h3>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            {% for enrollment in enrollments %}
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card course-card h-100 border-0 shadow-sm">
+
+                    <div class="course-image">
+
+                        {% if enrollment.course.image %}
+
+                        <img
+                                src="{{ enrollment.course.image.url }}"
+                                alt="{{ enrollment.course.title }}"
+                        >
+
+                        {% else %}
+
+                        🎓
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="card-body p-4">
+
+                        <h5 class="fw-bold">
+                            {{ enrollment.course.title }}
+                        </h5>
+
+
+                        <p class="text-secondary">
+                            {{ enrollment.course.description|truncatewords:15 }}
+                        </p>
+
+
+                        <div class="mb-3">
+
+                            <small class="text-secondary">
+                                Instructor:
+                            </small>
+
+                            <span class="fw-semibold">
+
+                                    {{ enrollment.course.instructor.name }}
+                                    {{ enrollment.course.instructor.family }}
+
+                                </span>
+
+                        </div>
+
+
+                        <div class="mb-3">
+
+                            <small class="text-secondary">
+                                Enrolled:
+                            </small>
+
+                            <span>
+                                    {{ enrollment.date_enrolled|date:"M d, Y" }}
+                                </span>
+
+                        </div>
+
+
+                        <a
+                                href="{% url 'course_detail' enrollment.course.pk %}"
+                                class="btn btn-primary w-100">
+
+                            Continue Learning →
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            {% empty %}
+
+
+            <div class="col-12">
+
+                <div class="text-center py-5">
+
+                    <div style="font-size: 60px;">
+                        🎓
+                    </div>
+
+                    <h4 class="fw-bold mt-3">
+                        No courses yet
+                    </h4>
+
+                    <p class="text-secondary">
+                        Start your learning journey today.
+                    </p>
+
+                    <a
+                            href="{% url 'course_list' %}"
+                            class="btn btn-primary">
+
+                        Explore Courses
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

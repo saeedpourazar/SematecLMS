@@ -1,0 +1,270 @@
+
+{% extends 'lms/staff_base.html' %}
+
+{% block title %}
+Course Management - Sematec LMS
+{% endblock %}
+
+{% block staff_content %}
+
+<style>
+    .course-filter {
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 22px;
+    }
+
+    .course-filter label {
+        font-weight: 600;
+        margin-bottom: 7px;
+        color: #374151;
+    }
+
+    .course-filter .form-control,
+    .course-filter .form-select {
+        min-height: 42px;
+    }
+
+    .course-count {
+        color: #64748b;
+        font-size: 14px;
+    }
+
+    .pagination .page-link {
+        color: #2563eb;
+    }
+
+    .pagination .active .page-link {
+        background-color: #2563eb;
+        border-color: #2563eb;
+        color: white;
+    }
+</style>
+
+<div class="staff-dashboard">
+
+    <div class="dashboard-header">
+        <h1>Course Management</h1>
+        <p>View and manage all educational courses.</p>
+
+        <a href="{% url 'add_course' %}" class="btn btn-primary mt-2">
+            + Add New Course
+        </a>
+    </div>
+
+    <div class="dashboard-card">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <h3 class="mb-0">All Courses</h3>
+
+            <span class="course-count">
+                {{ page_obj.paginator.count }} courses found
+            </span>
+        </div>
+
+        <form method="GET" class="course-filter">
+
+            <div class="row g-3">
+
+                <div class="col-lg-4 col-md-6">
+                    <label for="search">Search Courses</label>
+                    <input
+                        type="text"
+                        name="q"
+                        id="search"
+                        class="form-control"
+                        placeholder="Search by course title..."
+                        value="{{ search_query }}"
+                    >
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <label for="instructor">Instructor</label>
+                    <select name="instructor" id="instructor" class="form-select">
+                        <option value="">All Instructors</option>
+
+                        {% for instructor in instructors %}
+                            <option
+                                value="{{ instructor.pk }}"
+                                {% if selected_instructor == instructor.pk|stringformat:"s" %}selected{% endif %}
+                            >
+                                {{ instructor.name }} {{ instructor.family }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <label for="category">Category</label>
+                    <select name="category" id="category" class="form-select">
+                        <option value="">All Categories</option>
+
+                        {% for category in categories %}
+                            <option
+                                value="{{ category.pk }}"
+                                {% if selected_category == category.pk|stringformat:"s" %}selected{% endif %}
+                            >
+                                {{ category.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <label for="sort">Sort By</label>
+                    <select name="sort" id="sort" class="form-select">
+                        <option value="title" {% if sort_by == 'title' %}selected{% endif %}>
+                            Title
+                        </option>
+                        <option value="price" {% if sort_by == 'price' %}selected{% endif %}>
+                            Price
+                        </option>
+                        <option value="duration" {% if sort_by == 'duration' %}selected{% endif %}>
+                            Duration
+                        </option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="d-flex gap-2 mt-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Search
+                </button>
+
+                <a href="{% url 'course_management' %}" class="btn btn-outline-secondary">
+                    Clear Filters
+                </a>
+            </div>
+
+        </form>
+
+        {% if courses %}
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th>Instructor</th>
+                            <th>Duration</th>
+                            <th>Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for course in courses %}
+
+                            <tr>
+                                <td>{{ course.title }}</td>
+
+                                <td>
+                                    {{ course.instructor.name }}
+                                    {{ course.instructor.family }}
+                                </td>
+
+                                <td>{{ course.duration }} Hours</td>
+
+                                <td>{{ course.price }} Toman</td>
+
+                                <td class="text-nowrap">
+
+                                    <a
+                                        href="{% url 'edit_course' course.pk %}"
+                                        class="btn btn-sm btn-outline-primary"
+                                    >
+                                        Edit
+                                    </a>
+
+                                    <form
+                                        method="POST"
+                                        action="{% url 'delete_course' course.pk %}"
+                                        style="display: inline;"
+                                        onsubmit="return confirm('Are you sure you want to delete this course?');"
+                                    >
+                                        {% csrf_token %}
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                        >
+                                            Delete
+                                        </button>
+                                    </form>
+
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% if page_obj.has_other_pages %}
+
+                <nav aria-label="Course pages">
+                    <ul class="pagination justify-content-center mt-4">
+
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a
+                                    class="page-link"
+                                    href="?q={{ search_query|urlencode }}&instructor={{ selected_instructor }}&category={{ selected_category }}&sort={{ sort_by }}&page={{ page_obj.previous_page_number }}"
+                                >
+                                    Previous
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for number in page_obj.paginator.page_range %}
+                            <li class="page-item {% if page_obj.number == number %}active{% endif %}">
+                                <a
+                                    class="page-link"
+                                    href="?q={{ search_query|urlencode }}&instructor={{ selected_instructor }}&category={{ selected_category }}&sort={{ sort_by }}&page={{ number }}"
+                                >
+                                    {{ number }}
+                                </a>
+                            </li>
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a
+                                    class="page-link"
+                                    href="?q={{ search_query|urlencode }}&instructor={{ selected_instructor }}&category={{ selected_category }}&sort={{ sort_by }}&page={{ page_obj.next_page_number }}"
+                                >
+                                    Next
+                                </a>
+                            </li>
+                        {% endif %}
+
+                    </ul>
+                </nav>
+
+            {% endif %}
+
+        {% else %}
+
+            <div class="text-center py-5">
+                <h5 class="text-muted">No courses found.</h5>
+                <p class="text-muted mb-0">
+                    Try changing your search or filters.
+                </p>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

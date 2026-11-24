@@ -1,0 +1,172 @@
+
+{% extends 'lms/base.html' %}
+
+{% block content %}
+
+<style>
+    .staff-layout {
+        display: flex;
+        width: 100%;
+        min-height: calc(100vh - 100px);
+        background-color: #f5f7fb;
+    }
+
+    .staff-sidebar {
+        width: 250px;
+        min-width: 250px;
+        flex-shrink: 0;
+        background-color: #172554;
+        color: white;
+        padding: 30px 20px;
+    }
+
+    .staff-sidebar h4 {
+        color: white;
+        font-size: 21px;
+        font-weight: 700;
+        margin-bottom: 35px;
+        text-align: center;
+    }
+
+    .staff-sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .staff-sidebar nav a {
+        display: block;
+        color: #cbd5e1;
+        text-decoration: none;
+        padding: 12px 15px;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: all 0.2s ease;
+    }
+
+    .staff-sidebar nav a:hover {
+        background-color: #2563eb;
+        color: white;
+        transform: translateX(3px);
+    }
+
+    .staff-main {
+        flex: 1;
+        min-width: 0;
+        padding: 35px;
+    }
+
+    .dashboard-header {
+        margin-bottom: 30px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 8px;
+    }
+
+    .dashboard-header p {
+        color: #64748b;
+        font-size: 15px;
+    }
+
+    .dashboard-cards {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 25px;
+    }
+
+    .dashboard-card {
+        background-color: white;
+        padding: 25px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s ease;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .dashboard-card h3 {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1e40af;
+        margin-bottom: 12px;
+    }
+
+    .dashboard-card p {
+        color: #64748b;
+        margin-bottom: 20px;
+    }
+
+    .dashboard-card span {
+        color: #2563eb;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        .staff-layout {
+            flex-direction: column;
+        }
+
+        .staff-sidebar {
+            width: 100%;
+            min-width: 0;
+            padding: 20px;
+        }
+
+        .staff-sidebar h4 {
+            margin-bottom: 20px;
+        }
+
+        .staff-sidebar nav {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .staff-main {
+            padding: 20px;
+        }
+
+        .dashboard-cards {
+            grid-template-columns: 1fr;
+        }
+
+        .dashboard-header h1 {
+            font-size: 26px;
+        }
+    }
+</style>
+
+<div class="staff-layout">
+
+    <aside class="staff-sidebar">
+
+        <h4>Sematec Portal</h4>
+
+        <nav>
+            <a href="{% url 'staff_dashboard' %}">Dashboard</a>
+            <a href="{% url 'course_management' %}">Courses</a>
+            <a href="{% url 'student_management' %}">Students</a>
+            <a href="{% url 'instructor_management' %}">Instructors</a>
+            <a href="{% url 'reports' %}">Reports</a>
+        </nav>
+
+    </aside>
+
+    <main class="staff-main">
+
+        {% block staff_content %}
+        {% endblock %}
+
+    </main>
+
+</div>
+
+{% endblock %}

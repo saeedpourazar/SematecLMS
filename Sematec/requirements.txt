@@ -1,0 +1,9 @@
+SematecLMS - Python dependencies
+
+Core web framework
+
+Django==6.1.1
+
+ImageField support for course and instructor images
+
+Pillow
